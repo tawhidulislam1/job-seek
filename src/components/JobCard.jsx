@@ -2,11 +2,12 @@
 
 import { Link } from 'react-router-dom'
 
-const JobCard = () => {
+const JobCard = ({ job }) => {
+  const { job_title, date, max_price, category, min_price, description } = job || {};
   return (
     <Link
       to={`/job/1`}
-      className='w-full max-w-sm px-4 py-3 bg-white rounded-md shadow-md hover:scale-[1.05] transition-all'
+      className='w-full max-w-sm px-4 py-3 bg-white rounded-md shadow-md hover:scale-[1.05] transition-all'j
     >
       <div className='flex items-center justify-between'>
         <span className='text-xs font-light text-gray-800 '>
@@ -19,7 +20,7 @@ const JobCard = () => {
 
       <div>
         <h1 className='mt-2 text-lg font-semibold text-gray-800 '>
-          E-commerce Website Development
+          {job_title}
         </h1>
 
         <p className='mt-2 text-sm text-gray-600 '>
