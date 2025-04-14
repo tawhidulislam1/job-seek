@@ -3,9 +3,12 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { AuthContext } from '../providers/AuthProvider'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const AddJob = () => {
   const { user } = useContext(AuthContext)
+  const navigate = useNavigate()
   const [startDate, setStartDate] = useState(new Date())
   const handleSubmit = async e => {
     e.preventDefault();
@@ -20,14 +23,21 @@ const AddJob = () => {
     const details = {
       buyer: {
         email, name: user?.displayName, photo: user?.photoURL
-      }, job_title, date, max_price, category, min_price, description
+      },
+      job_title, date, max_price, category, min_price, description,
+      total_bid: 0,
     }
     console.log(details);
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/add-job`, details)
+      toast.success('Job Added Successfully')
+      form.reset()
+      navigate("/my-posted-jobs")
+    } catch (err) {
+      toast.error(err.message)
 
-    // send data 
-    const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/add-job`, details)
-    console.log(data);
-
+      console.log(err);
+    }
   }
 
   return (
