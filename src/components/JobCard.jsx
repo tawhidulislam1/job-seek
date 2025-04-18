@@ -5,10 +5,10 @@ import { format } from "date-fns";
 
 
 const JobCard = ({ job }) => {
-  const { job_title, date, max_price, category, min_price, description, total_bid } = job || {};
+  const { job_title, date, max_price, category, min_price, description, total_bid, _id } = job || {};
   return (
     <Link
-      to={`/job/1`}
+      to={`/job/${_id}`}
       className='w-full max-w-sm px-4 py-3 bg-white rounded-md shadow-md hover:scale-[1.05] transition-all'
     >
       <div className='flex items-center justify-between'>
