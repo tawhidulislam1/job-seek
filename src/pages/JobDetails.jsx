@@ -31,7 +31,7 @@ const JobDetails = () => {
     const email = user?.email;
     const comment = form.comment.value;
     const jobID = _id;
-    const bidInfo = { price, email, comment, deadline:startDate, jobID }
+    const bidInfo = { price, email, comment, deadline: startDate, jobID, job_title, category, status: "pending" }
 
     // validation 
 
