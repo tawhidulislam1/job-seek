@@ -127,8 +127,8 @@ const MyBids = () => {
                       <button
                         onClick={() => handleStatus(bid._id, bid.status, "Completed")}
                         title='Mark Complete'
-                        disabled={bid.status !== "In Progress" }
-                        className='disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none disabled:cursor-not-allowed'
+                        disabled={bid.status !== "In Progress"}
+                        className='disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none'
                       >
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
