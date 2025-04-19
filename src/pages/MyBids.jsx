@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 const MyBids = () => {
   const { user } = useContext(AuthContext)
@@ -13,6 +14,18 @@ const MyBids = () => {
   const fetchAllJobs = async () => {
     const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/bids/${user?.email}`);
     setJobs(data)
+  }
+  const handleStatus = async (id, prevStatus, status) => {
+    console.table({ id, prevStatus, status });
+    try {
+      const { data } = await axios.patch(`${import.meta.env.VITE_API_URL}/update-bidStatus/${id}`, { status });
+      toast.success("Status Updated Successfully")
+      console.log(data);
+      fetchAllJobs();
+    } catch (error) {
+      console.log(error);
+
+    }
   }
   return (
     <section className='container px-4 mx-auto my-12'>
@@ -86,17 +99,17 @@ const MyBids = () => {
                     </td>
 
                     <td className='px-4 py-4 text-sm text-gray-500  whitespace-nowrap'>
-                    {bid.price}$
+                      {bid.price}$
                     </td>
                     <td className='px-4 py-4 text-sm whitespace-nowrap'>
                       <div className='flex items-center gap-x-2'>
-                      <p
+                        <p
                           className={`px-3 py-1 ${bid.category === 'Web Development' && " text-blue-500 bg-blue-100/60"}
                           ${bid.category === 'Digital Marketing' && " text-green-500 bg-green-100/60"}
                           ${bid.category === 'Graphics Design' && " text-red-500 bg-red-100/60"}
                            text-xs  rounded-full`}
                         >
-                            {bid.category}
+                          {bid.category}
                         </p>
                       </div>
                     </td>
@@ -112,8 +125,10 @@ const MyBids = () => {
                     </td>
                     <td className='px-4 py-4 text-sm whitespace-nowrap'>
                       <button
+                        onClick={() => handleStatus(bid._id, bid.status, "Completed")}
                         title='Mark Complete'
-                        className='text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none disabled:cursor-not-allowed'
+                        disabled={bid.status !== "In Progress" }
+                        className='disabled:cursor-not-allowed text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none disabled:cursor-not-allowed'
                       >
                         <svg
                           xmlns='http://www.w3.org/2000/svg'
