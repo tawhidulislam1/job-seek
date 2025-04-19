@@ -1,12 +1,15 @@
 import axios from 'axios'
-import { format } from 'date-fns'
-import {  useEffect, useState } from 'react'
+import { compareAsc, format } from 'date-fns'
+import { useContext, useEffect, useState } from 'react'
 
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { AuthContext } from '../providers/AuthProvider'
+import toast from 'react-hot-toast'
 
 const JobDetails = () => {
+  const { user } = useContext(AuthContext)
   const [startDate, setStartDate] = useState(new Date())
   const { id } = useParams()
   const [job, setJob] = useState({});
@@ -18,18 +21,58 @@ const JobDetails = () => {
     const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/job/${id}`);
     setJob(data)
   }
-  console.log(job);
-  const { job_title, date, max_price, category, min_price, description, buyer } = job || {};
+  const { job_title, date: deadline, max_price, category, min_price, description, buyer, _id } = job || {};
+
+  const navigate = useNavigate()
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const form = e.target;
+    const price = form.price.value;
+    const email = user?.email;
+    const comment = form.comment.value;
+    const jobID = _id;
+    const bidInfo = { price, email, comment, deadline:startDate, jobID }
+
+    // validation 
+
+    //1. check ther user and bider is same or not
+    if (user?.email === buyer?.email) return toast.error("action not permitted")
+
+
+    // 2. check the deadline 
+    if (compareAsc(new Date(), new Date(deadline)) === 1) return toast.error("deadline is over")
+
+    //3. check the price 
+    if (price > max_price) return toast.error("The price is more then a project price . less this")
+
+
+    /// 4. check the deadline is over 
+    if (compareAsc(new Date(startDate), new Date(deadline)) === 1) return toast.error("Offer The Date within The Deadline ")
+
+
+    try {
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/add-bid`, bidInfo)
+      form.reset()
+      navigate("/my-bids")
+      console.log(data);
+      toast.success('Bid Successful')
+    } catch (err) {
+      toast.error(err?.response?.data)
+      console.log(err);
+    }
+    console.log(bidInfo);
+  }
+
 
   return (
     <div className='flex flex-col md:flex-row justify-around gap-5  items-center min-h-[calc(100vh-306px)] md:max-w-screen-xl mx-auto '>
       {/* Job Details */}
       <div className='flex-1  px-4 py-7 bg-white rounded-md shadow-md md:min-h-[350px]'>
         <div className='flex items-center justify-between'>
-          {date && 
-          <span className='text-sm font-light text-gray-800 '>
-          Deadline: {format(new Date(date), 'P')}
-        </span>}
+          {deadline &&
+            <span className='text-sm font-light text-gray-800 '>
+              Deadline: {format(new Date(deadline), 'P')}
+            </span>}
           <span className='px-4 py-1 text-xs text-blue-800 uppercase bg-blue-200 rounded-full '>
             {category}
           </span>
@@ -57,6 +100,7 @@ const JobDetails = () => {
             </div>
             <div className='rounded-full object-cover overflow-hidden w-14 h-14'>
               <img
+                referrerPolicy='no-referrer'
                 src={buyer?.photo}
                 alt=''
               />
@@ -73,7 +117,7 @@ const JobDetails = () => {
           Place A Bid
         </h2>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className='grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2'>
             <div>
               <label className='text-gray-700 ' htmlFor='price'>
@@ -96,6 +140,7 @@ const JobDetails = () => {
                 id='emailAddress'
                 type='email'
                 name='email'
+                defaultValue={user?.email}
                 disabled
                 className='block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md   focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring'
               />
