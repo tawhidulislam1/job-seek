@@ -1,19 +1,21 @@
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'
-import { AuthContext } from '../providers/AuthProvider';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import useAxiosSecure from '../Hooks/useAxiosSecure';
+import useAuth from '../Hooks/useAuth';
 
 const MyPostedJobs = () => {
-  const { user } = useContext(AuthContext)
+  const { user } = useAuth()
+  const axiosSecure = useAxiosSecure()
   const [jobs, setJobs] = useState([]);
   useEffect(() => {
     fetchAllJobs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const fetchAllJobs = async () => {
-    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/jobs/${user?.email}`);
+    const { data } = await axiosSecure.get(`/jobs/${user?.email}`);
     setJobs(data)
   }
   const handleDelete = async id => {

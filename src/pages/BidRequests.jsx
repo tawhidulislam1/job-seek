@@ -3,16 +3,19 @@ import { AuthContext } from "../providers/AuthProvider";
 import axios from "axios";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../Hooks/useAxiosSecure";
+
 
 const BidRequests = () => {
   const { user } = useContext(AuthContext)
   const [bids, setJobs] = useState([]);
+  const axiosSecure = useAxiosSecure()
   useEffect(() => {
     fetchAllJobs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const fetchAllJobs = async () => {
-    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/bid-request/${user?.email}`,{ withCredentials: true });
+    const { data } = await axiosSecure.get(`/bid-request/${user?.email}`,);
     setJobs(data)
   }
 
