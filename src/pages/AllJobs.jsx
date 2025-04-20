@@ -2,19 +2,23 @@
 import { useEffect, useState } from 'react'
 import JobCard from '../components/JobCard'
 import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const AllJobs = () => {
-  const [jobs, setJobs] = useState([]);
   const [filter, setFilter] = useState('');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('');
-  useEffect(() => {
-    const fetchAllJobs = async () => {
+
+  const { data: jobs, isLoading } = useQuery({
+    queryKey: ['jobs'],
+    queryFn: async () => {
       const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/all-jobs?filter=${filter}&search=${search}&sort=${sort}`);
-      setJobs(data)
+      console.log(data);
+      return data
     }
-    fetchAllJobs();
-  }, [filter, search, sort])
+  })
+  if (isLoading) return <LoadingSpinner></LoadingSpinner>;
   console.log(search);
 
   const handleReset = () => {

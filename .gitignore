@@ -21,4 +21,7 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
+*.firebase
+*.firebase.json
+*.firebaserc
 *.sw?

@@ -12,6 +12,7 @@ const TabCategories = () => {
     queryKey: ['jobs'],
     queryFn: async () => {
       const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/jobs`);
+      console.log(data);
       return data
     }
   })

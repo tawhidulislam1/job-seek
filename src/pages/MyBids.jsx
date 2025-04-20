@@ -1,30 +1,35 @@
-import { useEffect, useState } from "react";
+
 
 import axios from "axios";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
 import useAuth from "../Hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const MyBids = () => {
   const { user } = useAuth()
   const axiosSecure = useAxiosSecure()
-  const [bids, setJobs] = useState([]);
-  useEffect(() => {
-    fetchAllJobs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  const fetchAllJobs = async () => {
-    const { data } = await axiosSecure.get(`/bids/${user?.email}`);
-    setJobs(data)
-  }
+
+  const { data: bids, isLoading, isError } = useQuery({
+    queryKey: ['myBids'],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get(`/bids/${user?.email}`);
+      console.log(data);
+      return data
+    }
+
+  })
+  if (isLoading) return <LoadingSpinner></LoadingSpinner>;
+  if (isError) return <p>Error loading bids</p>;
+  if (!bids || bids.length === 0) return <p>No bids found</p>;
   const handleStatus = async (id, prevStatus, status) => {
     console.table({ id, prevStatus, status });
     try {
       const { data } = await axios.patch(`${import.meta.env.VITE_API_URL}/update-bidStatus/${id}`, { status });
       toast.success("Status Updated Successfully")
       console.log(data);
-      fetchAllJobs();
     } catch (error) {
       console.log(error);
 
@@ -36,7 +41,7 @@ const MyBids = () => {
         <h2 className='text-lg font-medium text-gray-800 '>My Bids</h2>
 
         <span className='px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full '>
-          {bids.length} Bid
+          {bids?.length} Bid
         </span>
       </div>
 
