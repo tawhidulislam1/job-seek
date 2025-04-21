@@ -1,33 +1,36 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import useAxiosSecure from '../Hooks/useAxiosSecure';
 import useAuth from '../Hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const MyPostedJobs = () => {
   const { user } = useAuth()
   const axiosSecure = useAxiosSecure()
-  const [jobs, setJobs] = useState([]);
-  useEffect(() => {
-    fetchAllJobs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  const fetchAllJobs = async () => {
-    const { data } = await axiosSecure.get(`/jobs/${user?.email}`);
-    setJobs(data)
-  }
+
+  const { data: jobs, isLoading } = useQuery({
+    queryKey: ['my-jobs', user?.email],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get(`/jobs/${user?.email}`);
+      console.log(data);
+      return data
+    }
+  })
+  if (isLoading) return <LoadingSpinner></LoadingSpinner>;
+
   const handleDelete = async id => {
     try {
       const { data } = await axios.delete(`${import.meta.env.VITE_API_URL}/job/${id}`);
       console.log(data);
       toast.success('Job Delete Successfully')
-      fetchAllJobs();
 
     }
     catch (err) {
-      console.log(err);
+      // console.log(err);
       toast.error(err.message)
 
     }

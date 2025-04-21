@@ -34,7 +34,7 @@ const AddJob = () => {
       job_title, date, max_price, category, min_price, description,
       total_bid: 0,
     }
-    console.log(details);
+    // console.log(details);
     try {
       mutateAsync(details)
       toast.success('Job Added Successfully')
@@ -43,7 +43,7 @@ const AddJob = () => {
     } catch (err) {
       toast.error(err.message)
 
-      console.log(err);
+      // console.log(err);
     }
   }
 

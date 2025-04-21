@@ -11,15 +11,15 @@ const AllJobs = () => {
   const [sort, setSort] = useState('');
 
   const { data: jobs, isLoading } = useQuery({
-    queryKey: ['jobs'],
+    queryKey: ['jobs', filter, search, sort],
     queryFn: async () => {
       const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/all-jobs?filter=${filter}&search=${search}&sort=${sort}`);
       console.log(data);
       return data
     }
   })
-  if (isLoading) return <LoadingSpinner></LoadingSpinner>;
-  console.log(search);
+
+  // console.log(search);
 
   const handleReset = () => {
     setFilter('')
@@ -35,7 +35,7 @@ const AllJobs = () => {
             <select
               name='category'
               id='category'
-              onChange={e => setFilter(e.target.value)}
+              onChange={e => setFilter(e.target?.value)}
               value={filter}
               className='border p-4 rounded-lg'
             >
@@ -50,7 +50,7 @@ const AllJobs = () => {
             <input
               className='px-6 py-2 text-gray-700 placeholder-gray-500 bg-white outline-none focus:placeholder-transparent'
               type='text'
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => setSearch(e.target?.value)}
               value={search}
               name='search'
               placeholder='Enter Job Title'
@@ -65,7 +65,7 @@ const AllJobs = () => {
             <select
               name='category'
               id='category'
-              onChange={e => setSort(e.target.value)}
+              onChange={e => setSort(e.target?.value)}
               value={sort}
               className='border p-4 rounded-md'
             >
@@ -77,7 +77,11 @@ const AllJobs = () => {
           <button onClick={handleReset} className='btn'>Reset</button>
         </div>
         <div className='grid grid-cols-1 gap-8 mt-8 xl:mt-16 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-          {jobs.map(job => <JobCard key={job._id} job={job}></JobCard>)}
+          {isLoading ? (
+          <div className='flex items-center justify-center col-span-full'>  <LoadingSpinner /></div>
+          ) : (
+            jobs.map(job => <JobCard key={job._id} job={job}></JobCard>)
+          )}
         </div>
       </div>
     </div>

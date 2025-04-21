@@ -12,16 +12,22 @@ const useAxiosSecure = () => {
     const { logOut } = useAuth()
     const navigate = useNavigate()
     useEffect(() => {
-        axiosSecure.interceptors.response.use(res => {
-            return res
-        }, async error => {
-            console.log(error);
-            if (error.response.status === 401 || error.response.status === 403) {
-                logOut();
-                navigate('/login');
+        const interceptor = axiosSecure.interceptors.response.use(
+            res => res,
+            async error => {
+                if (error.response?.status === 401 || error.response?.status === 403) {
+                    // await logOut();
+                    // navigate("/login");
+                }
+                return Promise.reject(error); // Add this to avoid unhandled promise issues
             }
-        })
-    }, [logOut, navigate])
+        );
+
+        return () => {
+            axiosSecure.interceptors.response.eject(interceptor);
+        };
+    }, [logOut, navigate]);
+
     return axiosSecure
 }
 

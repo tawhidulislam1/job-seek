@@ -27,11 +27,11 @@ const MyBids = () => {
   const handleStatus = async (id, prevStatus, status) => {
     console.table({ id, prevStatus, status });
     try {
-      const { data } = await axios.patch(`${import.meta.env.VITE_API_URL}/update-bidStatus/${id}`, { status });
+       await axios.patch(`${import.meta.env.VITE_API_URL}/update-bidStatus/${id}`, { status });
       toast.success("Status Updated Successfully")
-      console.log(data);
+      // console.log(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
     }
   }

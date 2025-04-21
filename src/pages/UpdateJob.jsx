@@ -39,7 +39,7 @@ const UpdateJob = () => {
       job_title, date, max_price, category, min_price, description,
       total_bid: job.total_bid,
     }
-    console.log(details);
+    // console.log(details);
     try {
       await axios.put(`${import.meta.env.VITE_API_URL}/update-job/${id}`, details)
       toast.success('Job Update Successfully')
@@ -48,7 +48,7 @@ const UpdateJob = () => {
     } catch (err) {
       toast.error(err.message)
 
-      console.log(err);
+      // console.log(err);
     }
   }
   return (
